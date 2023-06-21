@@ -13,4 +13,4 @@ def start(devs, auto = True):
       else:
          break
 
-   print("Execução finalizada em", ticks, " passos.")
+   print("Execução finalizada em", ticks, "passos.")

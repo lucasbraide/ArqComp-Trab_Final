@@ -24,9 +24,9 @@ firmware[4] = 0b000000101_000_00010100_000001_000_000
 firmware[5] = 0b000000000_000_00111100_000100_000_011
 
 
-# X = X - memory[address]
+# X = X - memory[add/ress]
 
-## 6: PC <- PC + 1; fetch; goto 7
+## 6: P/C <- PC + 1; fetch; goto 7
 firmware[6] = 0b000000111_000_00110101_001000_001_001
 
 ## 7: MAR <- MBR; read; goto 8
@@ -58,7 +58,7 @@ firmware[13] = 0b00001110_000_00110101_001000_001_001
 firmware[14] = 0b00000000_100_00010100_001000_001_010
 
 # if X == 0 goto address
-
+# 0b00010000_001_00010100_000100_000_011_011 - adicionar o endereço do BUS_A e BUS_B
 ## 15: X <- X; if alu = 0 goto 272 else goto 16
 firmware[15] = 0b00010000_001_00010100_000100_000_011
 
@@ -90,17 +90,33 @@ BUS_C = 0
 def read_regs(reg_num):
     global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B
     
-    BUS_A = H
+    reg_num_list = reg_num.split("_")
+
+    reg_num_a = reg_num_list[0]
+    reg_num_b = reg_num_list[1]
+
+    if reg_num_a == 0:
+        BUS_A = MDR
+    elif reg_num_a == 1:
+        BUS_A == PC
+    elif reg_num_a == 2:
+        BUS_A = MBR
+    elif reg_num_a == 3:
+        BUS_A = X
+    elif reg_num_a == 4:
+        BUS_A = Y
+    else:
+        BUS_A = 0
     
-    if reg_num == 0:
+    if reg_num_b == 0:
         BUS_B = MDR
-    elif reg_num == 1:
+    elif reg_num_b == 1:
         BUS_B = PC
-    elif reg_num == 2:
+    elif reg_num_b == 2:
         BUS_B = MBR
-    elif reg_num == 3:
+    elif reg_num_b == 3:
         BUS_B = X
-    elif reg_num == 4:
+    elif reg_num_b == 4:
         BUS_B = Y
     else:
         BUS_B = 0
