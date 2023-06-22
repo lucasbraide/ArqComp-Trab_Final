@@ -1,44 +1,44 @@
 import memory
 from array import array
 
-firmware = array('L', [0]) * 512
+firmware = array('Q', [0]) * 512
 
 # main: PC <- PC + 1; MBR <- read_byte(PC); goto MBR
-firmware[0] =   0b000000000_100_00110101_001000_001_001_001
+firmware[0] =   0b000000000_100_00110101_001000_001_000_001
 
 # HALT
-firmware[255] = 0b000000000_000_00000000_000000_000_001_000
+firmware[255] = 0b000000000_000_00000000_000000_000_000_000
 
 # X = X + memory[address]
 
 ## 2: PC <- PC + 1; fetch; goto 3
-firmware[2] = 0b000000011_000_00110101_001000_001_001_001
+firmware[2] = 0b000000011_000_00110101_001000_001_000_001
 
 ## 3: MAR <- MBR; read_word(MAR); goto 4
-firmware[3] = 0b000000100_000_00010100_100000_010_001_010
+firmware[3] = 0b000000100_000_00010100_100000_010_000_010
 
-## 4: X <- H + MDR; goto 0
-firmware[4] = 0b000000000_000_00111100_000100_000_000_011
+## 4: X <- X + MDR; goto 0
+firmware[4] = 0b000000000_000_00111100_000100_000_000_011   
 
 
-# X = X - memory[add/ress]
+# X = X - memory[address]
 
-## 5: P/C <- PC + 1; fetch; goto 6
-firmware[5] = 0b000000110_000_00110101_001000_001_001_001
+## 5: PC <- PC + 1; fetch; goto 6
+firmware[5] = 0b000000110_000_00110101_001000_001_000_001
 
 ## 6: MAR <- MBR; read; goto 7
-firmware[6] = 0b000000111_000_00010100_100000_010_001_010
+firmware[6] = 0b000000111_000_00010100_100000_010_000_010 #n é aqui
 
 ## 7: X <- X - MDR; goto 0
-firmware[7] = 0b000000000_000_00111111_000100_000_011_000
+firmware[7] = 0b000000000_000_00111111_000100_000_011_000 #suspeita
 
 # memory[address] = X
 
 ## 8: PC <- PC + 1; fetch; goto 9
-firmware[8] = 0b00001001_000_00110101_001000_001_001_001
+firmware[8] = 0b00001001_000_00110101_001000_001_000_001
 
 ## 9: MAR <- MBR; goto 10
-firmware[9] = 0b00001010_000_00010100_100000_000_001_010
+firmware[9] = 0b00001010_000_00010100_100000_000_000_010
 
 ## 10: MDR <- X; write; goto 0
 firmware[10] = 0b00000000_000_00010100_010000_100_000_011
@@ -46,22 +46,21 @@ firmware[10] = 0b00000000_000_00010100_010000_100_000_011
 # goto address 
 
 ## 11: PC <- PC + 1; fetch; goto 12
-firmware[11] = 0b00001100_000_00110101_001000_001_001_001
-
+firmware[11] = 0b00001100_000_00110101_001000_001_000_001 #Fica preso aqui
 ## 12: PC <- MBR; fetch; goto MBR
-firmware[12] = 0b00000000_100_00010100_001000_001_001_010
+firmware[12] = 0b00000000_100_00010100_001000_001_000_010
 
 # if X == 0 goto address
-# 0b00010000_001_00010100_000100_000_011_011 - adicionar o endereço do BUS_A e BUS_B
 
-## 13: X <- X; if alu = 0 goto 272 else goto 14
-firmware[13] = 0b00001101_001_00010100_000100_000_001_011
+## 13: X <- X; if alu = 0 goto 270 else goto 14
+firmware[13] = 0b00001110_001_00010100_000100_000_000_011
 
 ## 14: PC <- PC + 1; goto 0
-firmware[14] = 0b00000000_000_00110101_001000_000_001_001
+firmware[14] = 0b00000000_000_00110101_001000_000_000_001
 
-## 272: goto 12
-firmware[272]= 0b00001101_000_00000000_000000_000_001_000
+## 270: goto 11
+firmware[270]= 0b00001011_000_00000000_000000_000_000_000
+
 
 
 MPC = 0
@@ -73,7 +72,7 @@ PC  = 0
 MBR = 0
 X = 0
 Y = 0
-H = 0
+H = 0   
 
 N = 0
 Z = 1
@@ -84,22 +83,22 @@ BUS_C = 0
 
 def read_regs(reg_num):
     global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B
-    
-    reg_num_list = reg_num.split("_")
 
-    reg_num_a = reg_num_list[0]
-    reg_num_b = reg_num_list[1]
+    reg_num_a = reg_num & 0b111_000
+    reg_num_b = reg_num & 0b000_111
 
     if reg_num_a == 0:
         BUS_A = MDR
     elif reg_num_a == 1:
-        BUS_A == 0
+        BUS_A = PC
     elif reg_num_a == 2:
         BUS_A = MBR
     elif reg_num_a == 3:
         BUS_A = X
     elif reg_num_a == 4:
         BUS_A = Y
+    elif reg_num_a == 5:
+        BUS_A = H
     else:
         BUS_A = 0
     
@@ -245,10 +244,10 @@ def step():
         return False    
     
     read_regs        ( MIR & 0b00000000000000000000000000000111111)
-    alu              ((MIR & 0b00000000000011111111000000000000) >> 12)
-    write_regs       ((MIR & 0b00000000000000000000111111000000) >> 6)
-    memory_io        ((MIR & 0b00000000000000000000000000111000) >> 3)
-    next_instruction ((MIR & 0b11111111100000000000000000000000) >> 23,
-                      (MIR & 0b00000000011100000000000000000000) >> 20) #preciso alterar para o next ser o comando certo (com a adição dos 3 bits ao final)
-                      
+    alu              ((MIR & 0b00000000000011111111000000000000000) >> 15)
+    write_regs       ((MIR & 0b00000000000000000000111111000000000) >> 9)
+    memory_io        ((MIR & 0b00000000000000000000000000111000000) >> 6)
+    next_instruction ((MIR & 0b11111111100000000000000000000000000) >> 26,
+                      (MIR & 0b00000000011100000000000000000000000) >> 23)
+                     
     return True
