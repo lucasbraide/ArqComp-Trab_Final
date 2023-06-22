@@ -10,7 +10,7 @@ mem.write_word(130, 10)
 mem.write_byte(1, 2)      # X <- X + memory...
 mem.write_byte(2, 50)     # ...[50]
 
-# if X=0 goto 7
+# if X=0 goto 6
 mem.write_byte(3, 13)
 mem.write_byte(4, 6)
 

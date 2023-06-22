@@ -62,16 +62,19 @@ firmware[14] = 0b00000000_000_00110101_001000_000_000001
 ## 270: goto 13
 firmware[270]= 0b00001101_000_00000000_000000_000_000000
 
+# 15: X <- X * 2; goto 0
+# firmware[15] = 0b00000000_000_01010100_000100_000_000011
 
+#16: X <- X / 2
 
 
 MPC = 0
 MIR = 0
 
-MAR = 0
-MDR = 0
+MAR = 0 # Armazena endereço de memória do Fetch/Write/Read -> recebe do MBR (responsável por receber as instruções de PC)
+MDR = 0 # Sempre responsável por escrever ou receber dados da memória (no/do endereço armazenado em MAR)
 PC  = 0
-MBR = 0
+MBR = 0 # Sempre responsável receber o Read no endereço do PC (Pode receber um endereço, um comando, memória, etc -> depende da instrução)
 X = 0
 Y = 0
 H = 0   
@@ -91,8 +94,8 @@ def read_regs(reg_num):
 
     if reg_num_a == 0:
         BUS_A = MDR
-    elif reg_num_a == 1:
-        BUS_A = PC
+    elif reg_num_a == 1: #PC
+        BUS_A = 0 # Na micro arquitetura o BUS_A não recebe o PC
     elif reg_num_a == 2:
         BUS_A = MBR
     elif reg_num_a == 3:
@@ -192,11 +195,14 @@ def alu(control_bits):
     else:
         N = 1
         Z = 0
-        
+    
+    #Mutiplica por 2
     if shift_bits == 0b01:
         o = o << 1
+    #Divide por 2
     elif shift_bits == 0b10:
         o = o >> 1
+    #Mutiplica por 8
     elif shift_bits == 0b11:
         o = o << 8
         
