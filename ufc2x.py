@@ -1,7 +1,7 @@
 import memory
 from array import array
 
-firmware = array('Q', [0]) * 512
+firmware = array('Q', [0]) * 512 #Cria a memória do firmware - trocamos o L pelo Q para adapatar a nova arquitetura de 64 bits para adicionar o novo barramento A
 
 # main: PC <- PC + 1; MBR <- read_byte(PC); goto MBR
 firmware[0] =   0b000000000_100_00110101_001000_001_000001
@@ -26,7 +26,7 @@ firmware[4] = 0b000000000_000_00111100_000100_000_000011
 ## 5: PC <- PC + 1; fetch; goto 6
 firmware[5] = 0b000000110_000_00110101_001000_001_000001
 
-## 7: MAR <- MBR; read; goto 7
+## 6: MAR <- MBR; read; goto 7
 firmware[6] = 0b000000111_000_00010100_100000_010_000010
 
 ## 7: X <- X - MDR; goto 0
@@ -62,11 +62,6 @@ firmware[14] = 0b00000000_000_00110101_001000_000_000001
 ## 270: goto 13
 firmware[270]= 0b00001101_000_00000000_000000_000_000000
 
-# 15: X <- X * 2; goto 0
-# firmware[15] = 0b00000000_000_01010100_000100_000_000011
-
-#16: X <- X / 2
-
 
 MPC = 0
 MIR = 0
@@ -89,8 +84,8 @@ BUS_C = 0
 def read_regs(reg_num):
     global MDR, PC, MBR, X, Y, H, BUS_A, BUS_B
 
-    reg_num_a = reg_num & 0b111_000
-    reg_num_b = reg_num & 0b000_111
+    reg_num_a = reg_num & 0b111_000 # Pega apenas o barramento A - seleciona o BUS_A
+    reg_num_b = reg_num & 0b000_111 # Pega apenas o barramento B - seleciona o BUS_B
 
     if reg_num_a == 0:
         BUS_A = MDR
