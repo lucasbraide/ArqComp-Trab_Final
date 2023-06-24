@@ -1,7 +1,7 @@
 import memory
 from array import array
 
-firmware = array('Q', [0]) * 512 # Cria a memória do firmware - trocamos o L pelo Q para adapatar a nova arquitetura de 64 bits para adicionar o novo barramento A
+firmware = array('Q', [0]) * 512 # Cria a memória do firmware - trocamos o L pelo Q para adaptar a nova arquitetura de 64 bits para adicionar o novo barramento A
 
 # main: PC <- PC + 1; MBR <- read_byte(PC); goto MBR
 firmware[0] =   0b000000000_100_00110101_001000_001_000001
@@ -80,8 +80,30 @@ firmware[18] =   0b00010011_000_00110101_001000_001_000001
 firmware[19] =   0b00010100_000_00010100_100000_010_000010
 
 ## 20: X <- X * MDR; goto 0
-firmware[20] =   0b00000000_000_
+firmware[20] =   0b00000000_000_00100000_000100_000_000011
 
+# X = X // memory[address]
+
+## 21: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 22
+firmware[21] =   0b00010110_000_00110101_001000_001_000001
+
+## 22: MAR <- MBR; read_word(MAR); goto 23
+firmware[22] =   0b00010111_000_00010100_100000_010_000010
+
+## 23: X <- X // MDR; goto 0 
+firmware[23] =   0b00000000_000_00100001_000100_000_000011
+
+# X = X % memory[address]
+
+## 24: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 25
+firmware[24] =   0b00011001_000_00100010_001000_001_000001
+
+## 25: MAR <- MBR; read_word(MAR); goto 26
+firmware[25] =   0b00011010_000_00010100_100000_010_000010
+
+## 26; X <- X % MDR; goto 0
+firmware[26] =   0b00000000_000_00100010_000100_000_000011
+ 
 MPC = 0
 MIR = 0
 
@@ -170,7 +192,7 @@ def alu(control_bits):
     
     control_bits = control_bits & 0b00111111
     
-    if control_bits == 0b011000: #24  
+    if control_bits == 0b011000:   #24  
         o = a
     elif control_bits == 0b010100: #20
         o = b
@@ -184,7 +206,7 @@ def alu(control_bits):
         o = a + b + 1
     elif control_bits == 0b111001: #57
         o = a + 1
-    elif control_bits == 0b110101: ##53
+    elif control_bits == 0b110101: #53
         o = b + 1
     elif control_bits == 0b111111: #63
         o = b - a
@@ -202,8 +224,15 @@ def alu(control_bits):
         o = 1
     elif control_bits == 0b110010: #50
         o = -1 
+    elif control_bits == 0b100000: #32
+        o = a * b
+    elif control_bits == 0b100001: #33
+        o = a // b
+    elif control_bits == 0b100010: #34
+        o = a % b
 
-        
+    
+
     
     
         
