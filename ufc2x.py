@@ -1,7 +1,7 @@
 import memory
 from array import array
 
-firmware = array('Q', [0]) * 512 #Cria a memória do firmware - trocamos o L pelo Q para adapatar a nova arquitetura de 64 bits para adicionar o novo barramento A
+firmware = array('Q', [0]) * 512 # Cria a memória do firmware - trocamos o L pelo Q para adapatar a nova arquitetura de 64 bits para adicionar o novo barramento A
 
 # main: PC <- PC + 1; MBR <- read_byte(PC); goto MBR
 firmware[0] =   0b000000000_100_00110101_001000_001_000001
@@ -11,57 +11,76 @@ firmware[255] = 0b000000000_000_00000000_000000_000_000000
 
 # X = X + memory[address]
 
-## 2: PC <- PC + 1; fetch; goto 3
-firmware[2] = 0b000000011_000_00110101_001000_001_000001
+## 2: PC <- PC + 1;PC + 1; MBR <- read_byte(PC) -    fetch; goto 3
+firmware[2] =   0b000000011_000_00110101_001000_001_000001
 
 ## 3: MAR <- MBR; read_word(MAR); goto 4
-firmware[3] = 0b000000100_000_00010100_100000_010_000010
+firmware[3] =   0b000000100_000_00010100_100000_010_000010
 
 ## 4: X <- MDR + X; goto 0
-firmware[4] = 0b000000000_000_00111100_000100_000_000011
+firmware[4] =   0b000000000_000_00111100_000100_000_000011
 
 
 # X = X - memory[address]
 
 ## 5: PC <- PC + 1; fetch; goto 6
-firmware[5] = 0b000000110_000_00110101_001000_001_000001
+firmware[5] =   0b000000110_000_00110101_001000_001_000001
 
 ## 6: MAR <- MBR; read; goto 7
-firmware[6] = 0b000000111_000_00010100_100000_010_000010
+firmware[6] =   0b000000111_000_00010100_100000_010_000010
 
 ## 7: X <- X - MDR; goto 0
-firmware[7] = 0b000000000_000_00111111_000100_000_000011
+firmware[7] =   0b000000000_000_00111111_000100_000_000011
 
 # memory[address] = X
 
 ## 8: PC <- PC + 1; fetch; goto 9
-firmware[8] = 0b00001001_000_00110101_001000_001_000001
+firmware[8] =    0b00001001_000_00110101_001000_001_000001
 
 ## 9: MAR <- MBR; goto 10
-firmware[9] = 0b00001010_000_00010100_100000_000_000010
+firmware[9] =    0b00001010_000_00010100_100000_000_000010
 
 ## 10: MDR <- X; write; goto 0
-firmware[10] = 0b00000000_000_00010100_010000_100_000011
+firmware[10] =   0b00000000_000_00010100_010000_100_000011
 
 # goto address 
 
-## 11: PC <- PC + 1; fetch; goto 12
-firmware[11] = 0b00001100_000_00110101_001000_001_000001
+## 11: PC <- PC + 1; PC + 1; MBR <- read_byte(PC) - fetch; goto 12
+firmware[11] =   0b00001100_000_00110101_001000_001_000001
 
 ## 12: PC <- MBR; fetch; goto MBR
-firmware[12] = 0b00000000_100_00010100_001000_001_000010
+firmware[12] =   0b00000000_100_00010100_001000_001_000010
 
 # if X == 0 goto address
 
 ## 13: X <- X; if alu = 0 goto 270 else goto 14
-firmware[13] = 0b00001110_001_00010100_000100_000_000011
+firmware[13] =   0b00001110_001_00010100_000100_000_000011
 
 ## 14: PC <- PC + 1; goto 0
-firmware[14] = 0b00000000_000_00110101_001000_000_000001
+firmware[14] =   0b00000000_000_00110101_001000_000_000001
 
 ## 270: goto 13
-firmware[270]= 0b00001101_000_00000000_000000_000_000000
+firmware[270]=   0b00001101_000_00000000_000000_000_000000
 
+## 15: X <- X << 1 (X * 2); goto 0
+firmware[15] =   0b00000000_000_00101010_000100_000_000011
+
+## 16: X <- X >> 1 (X / 2); goto 0
+firmware[16] =   0b00000000_000_10010100_000100_000_000011
+
+## 17: X <- X - 1
+firmware[17] =   0b00000000_000_00110110_000100_000_000011
+
+# X = X * memory[address]
+
+## 18: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 19
+firmware[18] =   0b00010011_000_00110101_001000_001_000001
+
+## 19: MAR <- MBR; read_word(MAR); goto 20
+firmware[19] =   0b00010100_000_00010100_100000_010_000010
+
+## 20: X <- X * MDR; goto 0
+firmware[20] =   0b00000000_000_
 
 MPC = 0
 MIR = 0
@@ -151,38 +170,42 @@ def alu(control_bits):
     
     control_bits = control_bits & 0b00111111
     
-    if control_bits == 0b011000: 
+    if control_bits == 0b011000: #24  
         o = a
-    elif control_bits == 0b010100:
+    elif control_bits == 0b010100: #20
         o = b
-    elif control_bits == 0b011010:
+    elif control_bits == 0b011010: #26
         o = ~a
-    elif control_bits == 0b101100:
+    elif control_bits == 0b101100: #44
         o = ~b
-    elif control_bits == 0b111100:
+    elif control_bits == 0b111100: #60
         o = a + b    
-    elif control_bits == 0b111101:
+    elif control_bits == 0b111101: #61
         o = a + b + 1
-    elif control_bits == 0b111001:
+    elif control_bits == 0b111001: #57
         o = a + 1
-    elif control_bits == 0b110101:
+    elif control_bits == 0b110101: ##53
         o = b + 1
-    elif control_bits == 0b111111:
+    elif control_bits == 0b111111: #63
         o = b - a
-    elif control_bits == 0b110110:
+    elif control_bits == 0b110110: #54
         o = b - 1
-    elif control_bits == 0b111011:
+    elif control_bits == 0b111011: #59
         o = -a
-    elif control_bits == 0b001100:
+    elif control_bits == 0b001100: #12
         o = a & b
-    elif control_bits == 0b011100:
+    elif control_bits == 0b011100: #28
         o = a | b
-    elif control_bits == 0b010000:
+    elif control_bits == 0b010000: #16
         o = 0
-    elif control_bits == 0b110001:
+    elif control_bits == 0b110001: #49
         o = 1
-    elif control_bits == 0b110010:
+    elif control_bits == 0b110010: #50
         o = -1 
+
+        
+    
+    
         
     if o == 0:
         N = 0
