@@ -4,7 +4,7 @@ import memory as mem
 import clock as clk 
 import disk
 
-disk.read(str(sys.argv[1]))
+disk.read(str("asm/factorialjr.bin"))
 
 clk.start([cpu])
 

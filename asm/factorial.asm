@@ -20,7 +20,6 @@ princ add x, c
 
     mov x, t
     sub x, u
-    mov x, c
     sub x, c
 
     add x, r
