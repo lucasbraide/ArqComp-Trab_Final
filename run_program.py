@@ -4,9 +4,9 @@ import memory as mem
 import clock as clk 
 import disk
 
-disk.read(str(sys.argv[1]))
+disk.read(str("asm/testemult.bin"))
 
 
 clk.start([cpu])
 
-print("Depois: ", mem.read_word(4))
+print("Depois: ", mem.read_word(1))
