@@ -95,17 +95,6 @@ firmware[22] =   0b00010111_000_00010100_100000_010_000010
 ## 23: X <- X // MDR; goto 0 
 firmware[23] =   0b00000000_000_00100001_000100_000_000011
 
-# X = X % memory[address]
-
-## 24: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 25
-firmware[24] =   0b00011001_000_00100010_001000_001_000001
-
-## 25: MAR <- MBR; MDR <- read_word(MAR); goto 26
-firmware[25] =   0b00011010_000_00010100_100000_010_000010
-
-## 26: X <- X % MDR; goto 0
-firmware[26] =   0b00000000_000_00100010_000100_000_000011
-
 # Operações com Y
 
 # Y <- Y + memory[address] (add y, )
@@ -200,6 +189,7 @@ def read_regs(reg_num):
     reg_num_a = reg_num & 0b111_000 # Pega apenas o barramento A - seleciona o BUS_A
     reg_num_b = reg_num & 0b000_111 # Pega apenas o barramento B - seleciona o BUS_B
 
+    # Faz as verificações para pegar o valor correto de cada REG
     if reg_num_a == 0:
         BUS_A = MDR
     elif reg_num_a == 1: #PC
@@ -297,17 +287,10 @@ def alu(control_bits):
     elif control_bits == 0b110010: #50
         o = -1 
     elif control_bits == 0b100000: #32
-        o = a * b
+        o = a * b # Circuito adicionado de multiplicação
     elif control_bits == 0b100001: #33
         o = a // b
-    elif control_bits == 0b100010: #34
-        o = a % b
 
-    
-
-    
-    
-        
     if o == 0:
         N = 0
         Z = 1

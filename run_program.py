@@ -8,4 +8,4 @@ disk.read(str(sys.argv[1]))
 
 clk.start([cpu])
 
-print("Depois: ", mem.read_word(1))
+print("Depois: ", mem.read_word(1)) # Padronização do retorno da função para o end 1

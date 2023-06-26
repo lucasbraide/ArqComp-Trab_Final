@@ -1,47 +1,30 @@
-goto tubias
-wb 0
+         goto main # Questão 4 - Fatorial de um número
+     wb 0        
+    
+r    ww 0           # Retorno da função - resultado do fatorial
+c    ww 12          # Paramtro que terá seu fatorial calculado
+u    ww 1           # Auxiliar que servirá para decrementar o número e multiplicar
 
-r ww 0 
-b ww 0
-t ww 0
-c ww 5
-u ww 1
-
-tubias add x, c
-    mov x, r
+main add x, c       # Bota o valor de c em x (x = x + c)
+    jz x, finalmain # Se N igual a 0, finaliza o programa e retorna r = 1       
     sub x, u
-    mov x, c
-    sub x, c
+    jz x, finalmain # Verificao se é 1
+    add x, u        # Volta o x no estado anterior
+    mov x, r        # Bota o valor de x em r (memory[r] = x)
+    add y, r        # Bota o valor de r em y (y = y + r)
+    goto loop       # Entra no loop de fatorial
+loop sub x, u       # Subtrai 1 de x (x = x - u)
+    jz x, final     # Se x == 0 -> vai pro final e termina o programa
+    mov x, r        # Bota o valor de x (decrementado) em r (memory[r] = x)
+    mult y, r       # Multiplica y com r (y = y * r)
+    goto loop       # Volta para o loop
+final mov y, r      # Ao final -> move o valor de y para o r (memory[r] = y)
+    halt            # Comando de parada
 
-    goto princ
-
-princ add x, c
-    jz x, final
-
-    mov x, t
-    sub x, u
-    mov x, c
-    sub x, c
-
-    add x, r
-    mov x, b
-    sub x, b
-    mov x, r
-
-    goto mult
-
-mult add x, t
-    jz x, princ
-
-    sub x, u
-    mov x, t
-    sub x, t
-
-    add x, r
-    add x, b
-    mov x, r 
-    sub x, r
-
-    goto mult
-
-final halt
+finalmain add y, r  # Usa o Y para verificar se o valor inserido é 0
+          jz y, caso1
+          mov y, r  
+          halt  
+caso1 add y, u
+      mov y, r
+      halt
