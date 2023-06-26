@@ -7,14 +7,14 @@ lines_bin = []
 names = []
 
 instructions = ['add', 'sub', 'mov', 'goto', 'jz', 'wb', 'ww', 'mult', 'div', 'halt']
-instruction_set = {
-                   'add' : {'x': 0x02, 'y': 0x31}, 
-                   'sub' : {'x': 0x05, 'y': 0x31}, 
-                   'mov' : {'x': 0x08, 'y': 0x31},
+instruction_set = { # Endereços no firmware de cada instrução (do X e do Y)
+                   'add' : {'x': 0x02, 'y': 0x1B}, 
+                   'sub' : {'x': 0x05, 'y': 0x1E}, 
+                   'mov' : {'x': 0x08, 'y': 0x21},
                    'goto': 0x0B,
-                   'jz'  : {'x': 0x0D, 'y': 0x31},
-                   'mult': {'x': 0x12, 'y': 0x31},
-                   'div' : {'x': 0x15, 'y': 0x31},
+                   'jz'  : {'x': 0x0D, 'y': 0x24},
+                   'mult': {'x': 0x12, 'y': 0x26},
+                   'div' : {'x': 0x15, 'y': 0x29},
                    'halt': 0xFF,
                    }
 

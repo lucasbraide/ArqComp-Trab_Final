@@ -2,12 +2,12 @@ goto main
 wb 0
 
 r ww 0
-a ww 1
-b ww 0
+a ww 32
+b ww 32
 
-main add x, b
-     jz x, teste
-     mov x, a
-teste mov x, r
+main add y, b
+     jz y, teste
+     mov y, a
+teste mov y, r
      halt
      

@@ -6,8 +6,8 @@ b    ww 64
 c    ww 64     
 d    ww 0
 
-main add x, b 
-     mult x, c
-     mov x, a 
-     mov x, d
-     halt 
+main add y, b 
+     mult y, c
+     mov y, a 
+     mov y, d
+     halt
