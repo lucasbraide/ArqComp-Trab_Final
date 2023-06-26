@@ -7,7 +7,7 @@ c    ww 64
 d    ww 0
 
 main add x, b 
-     mu x, c 
+     mult x, c
      mov x, a 
      mov x, d
      halt 

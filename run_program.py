@@ -4,8 +4,7 @@ import memory as mem
 import clock as clk 
 import disk
 
-disk.read(str("asm/testemult.bin"))
-
+disk.read(str(sys.argv[1]))
 
 clk.start([cpu])
 
