@@ -6,15 +6,17 @@ lines = []
 lines_bin = []
 names = []
 
-instructions = ['add', 'sub', 'goto', 'mov', 'jz', 'halt', 'wb', 'ww', 'mult', 'div']
-instruction_set = {'add' : 0x02, 
-                   'sub' : 0x05, 
-                   'mov' : 0x08, 
+instructions = ['add', 'sub', 'mov', 'goto', 'jz', 'wb', 'ww', 'mult', 'div', 'halt']
+instruction_set = {
+                   'add' : {'x': 0x02, 'y': 0x31}, 
+                   'sub' : {'x': 0x05, 'y': 0x31}, 
+                   'mov' : {'x': 0x08, 'y': 0x31},
                    'goto': 0x0B,
-                   'jz'  : 0x0D, 
+                   'jz'  : {'x': 0x0D, 'y': 0x31},
+                   'mult': {'x': 0x12, 'y': 0x31},
+                   'div' : {'x': 0x15, 'y': 0x31},
                    'halt': 0xFF,
-                   'mult': 0x12,
-                   'div' : 0x15,}
+                   }
 
 def is_instruction(str):
    global instructions
@@ -37,9 +39,9 @@ def is_name(str):
 def encode_2ops(inst, ops):
    line_bin = []
    if len(ops) > 1:
-      if ops[0] == 'x':
+      if ops[0] == 'x' or ops[0] == 'y':
          if is_name(ops[1]):
-            line_bin.append(instruction_set[inst])
+            line_bin.append(instruction_set[inst][ops[0]])
             line_bin.append(ops[1])
    return line_bin
 
@@ -139,7 +141,16 @@ def resolve_names():
    for line in lines_bin:
       for i in range(0, len(line)):
          if is_name(line[i]):
-            if line[i-1] == instruction_set['add'] or line[i-1] == instruction_set['sub'] or line[i-1] == instruction_set['mov'] or line[i-1] == instruction_set['mult'] or line[i-1] == instruction_set['div']:
+            if (
+               line[i-1] == instruction_set['add']['x'] or line[i-1] == instruction_set['sub']['x'] 
+               or line[i-1] == instruction_set['mov']['x'] or line[i-1] == instruction_set['mult']['x']
+               or line[i-1] == instruction_set['div']['x']
+               or
+               line[i-1] == instruction_set['add']['y'] or line[i-1] == instruction_set['sub']['y'] 
+               or line[i-1] == instruction_set['mov']['y'] or line[i-1] == instruction_set['mult']['y']
+               or line[i-1] == instruction_set['div']['y']
+               ):
+
                line[i] = get_name_byte(line[i])//4
             else:
                line[i] = get_name_byte(line[i])
