@@ -28,26 +28,26 @@ main add x, m       # Bota x em m
 
      goto potencia
 
-caso1 halt
-caso2 add x, m
-     mov x, r
+caso1 halt         # Base = 0, retorna 0
+caso2 add x, m     # Base = 1, retorna 1     
+     mov x, r      
      halt
-caso3 add y, u
+caso3 add y, u     # Se expoente = 0, retorna 1
+     mov y, r      
+     halt
+caso4 add y, m     # Se expoente = 0, retorna a base
      mov y, r
      halt
-caso4 add y, m
-     mov y, r
-     halt
 
-potencia add x, m
-     add y, n
-     mov x, r
+potencia add x, m  # Faz a preparação da potencia -> adiciona a base ao x
+     add y, n      # Adiciona o expoente ao y
+     mov x, r      # Move a base para o x
+     goto loop     # Manda para o loop
+
+loop jz y, final   # Se y (qtd de vezes que a potencia executou for = expoente no incio) vai para o final
+     mult x, r     # Multiplica a base por r
+     sub y, u      # Subtrai 1 de y
      goto loop
 
-loop jz y, final
-     mult x, r
-     sub y, u
-     goto loop
-
-final mov x, r
-     halt
+final mov x, r     # Move r para x
+     halt          # Finaliza
