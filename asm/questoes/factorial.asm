@@ -1,8 +1,8 @@
-         goto main # Questão 4 - Fatorial de um número
+    goto main # Questão 4 - Fatorial de um número
      wb 0        
     
 r    ww 0           # Retorno da função - resultado do fatorial
-c    ww 12          # Paramtro que terá seu fatorial calculado
+c    ww 5          # Paramtro que terá seu fatorial calculado
 u    ww 1           # Auxiliar que servirá para decrementar o número e multiplicar
 
 main add x, c       # Bota o valor de c em x (x = x + c)
@@ -22,9 +22,9 @@ final mov y, r      # Ao final -> move o valor de y para o r (memory[r] = y)
     halt            # Comando de parada
 
 finalmain add y, r  # Usa o Y para verificar se o valor inserido é 0
-          jz y, caso1
-          mov y, r  
-          halt  
+          jz y, caso1 # Se for 0 vai para Caso 1
+          mov y, r  # Y para o retorno
+          halt      # Fim
 caso1 add y, u
-      mov y, r
-      halt
+      mov y, r      # Y para o retorno
+      halt          # Fim

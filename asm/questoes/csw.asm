@@ -2,9 +2,9 @@
     wb 0
 
 r ww 1          # Resultado - Retorno da função
-a ww 250        # Argumento da função CSW
+a ww 1000        # Argumento da função CSW
 b ww 250        # Operando da funcao CSW
-c ww 249        # Argumento da funcao CSW
+c ww 99999        # Argumento da funcao CSW
 
 
 main add x, a   # Se a != c; a <- c; return 1 // x recebe o valor de a (x = x + a)

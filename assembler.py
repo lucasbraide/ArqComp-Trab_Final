@@ -78,7 +78,7 @@ def encode_ww(ops):
    return line_bin
       
 def encode_instruction(inst, ops):
-   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'mult' or inst: # Multiplicação adicionada
+   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'mult': # Multiplicação adicionada
       return encode_2ops(inst, ops)
    elif inst == 'goto':
       return encode_goto(ops)
@@ -143,7 +143,6 @@ def resolve_names():
             if ( # Seleção da instrução para o x ou para o y
                line[i-1] == instruction_set['add']['x'] or line[i-1] == instruction_set['sub']['x'] 
                or line[i-1] == instruction_set['mov']['x'] or line[i-1] == instruction_set['mult']['x']
-               or line[i-1] == instruction_set['div']['x']
                or
                line[i-1] == instruction_set['add']['y'] or line[i-1] == instruction_set['sub']['y'] 
                or line[i-1] == instruction_set['mov']['y'] or line[i-1] == instruction_set['mult']['y']
