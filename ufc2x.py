@@ -84,16 +84,6 @@ firmware[19] =   0b00010100_000_00010100_100000_010_000010
 ## 20: X <- X * MDR; goto 0
 firmware[20] =   0b00000000_000_00100000_000100_000_000011
 
-# X = X // memory[address] (div x, )
-
-## 21: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 22
-firmware[21] =   0b00010110_000_00110101_001000_001_000001
-
-## 22: MAR <- MBR; read_word(MAR); goto 23
-firmware[22] =   0b00010111_000_00010100_100000_010_000010
-
-## 23: X <- X // MDR; goto 0 
-firmware[23] =   0b00000000_000_00100001_000100_000_000011
 
 # Operações com Y
 
@@ -152,16 +142,6 @@ firmware[39] =   0b00101000_000_00010100_100000_010_000010
 ## 40: Y <- Y * MDR; goto 0
 firmware[40] =   0b00000000_000_00100000_000010_000_000100
 
-# Y <- Y // memory[address] (div y, )
-
-## 41: PC <- PC + 1; MBR <- read_byte(PC) - fetch; goto 42
-firmware[41] =   0b00101010_000_00110101_001000_001_000001
-
-## 42: MAR <- MBR; MDR <- read_word(MAR) - read; goto 43
-firmware[42] =   0b00101011_000_00010100_100000_010_000010
-
-## 43: Y <- Y // MDR; goto 0 
-firmware[43] =   0b00000000_000_00100001_000010_000_000100
 
 
  
@@ -288,8 +268,6 @@ def alu(control_bits):
         o = -1 
     elif control_bits == 0b100000: #32
         o = a * b # Circuito adicionado de multiplicação
-    elif control_bits == 0b100001: #33
-        o = a // b
 
     if o == 0:
         N = 0

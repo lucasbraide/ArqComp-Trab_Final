@@ -6,7 +6,7 @@ lines = []
 lines_bin = []
 names = []
 
-instructions = ['add', 'sub', 'mov', 'goto', 'jz', 'wb', 'ww', 'mult', 'div', 'halt']
+instructions = ['add', 'sub', 'mov', 'goto', 'jz', 'wb', 'ww', 'mult', 'halt']
 instruction_set = { # Endereços no firmware de cada instrução (do X e do Y)
                    'add' : {'x': 0x02, 'y': 0x1B}, 
                    'sub' : {'x': 0x05, 'y': 0x1E}, 
@@ -14,7 +14,6 @@ instruction_set = { # Endereços no firmware de cada instrução (do X e do Y)
                    'goto': 0x0B,
                    'jz'  : {'x': 0x0D, 'y': 0x24},
                    'mult': {'x': 0x12, 'y': 0x26},
-                   'div' : {'x': 0x15, 'y': 0x29},
                    'halt': 0xFF,
                    }
 
@@ -79,7 +78,7 @@ def encode_ww(ops):
    return line_bin
       
 def encode_instruction(inst, ops):
-   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'mult' or inst == 'div': # Divisão e multiplicação adicionados
+   if inst == 'add' or inst == 'sub' or inst == 'mov' or inst == 'jz' or inst == 'mult' or inst: # Multiplicação adicionada
       return encode_2ops(inst, ops)
    elif inst == 'goto':
       return encode_goto(ops)
@@ -148,7 +147,6 @@ def resolve_names():
                or
                line[i-1] == instruction_set['add']['y'] or line[i-1] == instruction_set['sub']['y'] 
                or line[i-1] == instruction_set['mov']['y'] or line[i-1] == instruction_set['mult']['y']
-               or line[i-1] == instruction_set['div']['y']
                ):
 
                line[i] = get_name_byte(line[i])//4
